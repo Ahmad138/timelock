@@ -121,7 +121,7 @@ class TimelockChain:
             import pdb; pdb.set_trace()
             raise ValueError("Can't unlock chain: midstate not available")
 
-        start_time = time.clock()
+        start_time = time.monotonic()
 
         if j is None:
             j = self.n
@@ -130,15 +130,15 @@ class TimelockChain:
             raise ValueError('j > self.n')
 
         max_m = 1
-        while self.i < j and time.clock() - start_time < t:
-            t0 = time.clock()
+        while self.i < j and time.monotonic() - start_time < t:
+            t0 = time.monotonic()
 
             m = min(j - self.i, max_m)
             # FIXME: need some kind of "fastest kernel" thing here
             self.midstate = self.algorithm.KERNELS[-1].run(self.midstate, m)
             self.i += m
 
-            if time.clock() - t0 < 0.025:
+            if time.monotonic() - t0 < 0.025:
                 max_m *= 2
 
         assert self.i <= self.n
@@ -311,9 +311,9 @@ class Timelock:
 
         Returns True if the timelock is now unlocked, False if otherwise
         """
-        start_time = time.clock()
+        start_time = time.monotonic()
 
-        while self.secret is None and time.clock() - start_time < t:
+        while self.secret is None and time.monotonic() - start_time < t:
 
             enum_chains = tuple(enumerate(self.chains))
 
