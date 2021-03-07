@@ -112,17 +112,17 @@ def cmd_compute(args):
 
     chain = tl.chains[args.index]
 
-    start_time = time.clock()
+    start_time = time.monotonic()
     start_i = chain.i
 
     while not chain.unlock(1):
 
-        hashes_per_sec = (chain.i - start_i) / (time.clock() - start_time)
+        hashes_per_sec = (chain.i - start_i) / (time.monotonic() - start_time)
         est_time_to_finish = (chain.n - chain.i) / hashes_per_sec
 
         logging.info('chain #%d: %ds elapsed, %ds to go at %.4f Mhash/s, i = %d, midstate = %s' % (
                      args.index,
-                     time.clock() - start_time,
+                     time.monotonic() - start_time,
                      est_time_to_finish,
                      hashes_per_sec/1000000,
                      chain.i,
@@ -148,7 +148,7 @@ def cmd_lock(args):
 def cmd_unlock(args):
     tl = timelock.Timelock.from_json(json.loads(args.file.read()))
 
-    start_time = time.clock()
+    start_time = time.monotonic()
     chain_idx = 0
     sum_hashes = 0
 
@@ -164,7 +164,7 @@ def cmd_unlock(args):
                 chain_idx += 1
 
             else:
-                hashes_per_sec = sum_hashes / (time.clock() - start_time)
+                hashes_per_sec = sum_hashes / (time.monotonic() - start_time)
 
                 sum_hashes_left = ((tl.chains[chain_idx].n - tl.chains[chain_idx].i)
                                    + sum([chain.n for chain in tl.chains[chain_idx+1:]]))
@@ -173,7 +173,7 @@ def cmd_unlock(args):
 
                 logging.info('chain #%d: %ds elapsed, %ds to go at %.4f Mhash/s' % (
                              chain_idx,
-                             time.clock() - start_time,
+                             time.monotonic() - start_time,
                              est_time_to_finish,
                              hashes_per_sec/1000000,
                              ))

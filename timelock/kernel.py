@@ -80,12 +80,12 @@ class Kernel:
 
         Returns list of hashes/second for each run.
         """
-        start_time = time.clock()
+        start_time = time.monotonic()
 
         def time_run(n):
-            start_time = time.clock()
+            start_time = time.monotonic()
             cls.run(b'\x00'*cls.ALGORITHM.NONCE_LENGTH, n)
-            return time.clock() - start_time
+            return time.monotonic() - start_time
 
         # We don't want individual runs to be too short, so first find how many
         # iterations we need for a run to take 0.1 seconds.
